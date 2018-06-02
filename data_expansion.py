@@ -5,13 +5,12 @@ import cv2
 import numpy as np
 import glob
 import os
+import time
 
-#画像の名前を分けるための番号（名前がかぶらないためのものなので何でもOK　例20180526）
-name_num = 20180531
-#ラベルのパス
-label_dir = "/home/shun-pc/Desktop/S_image_Data_expansion/labels/f1527496759856816053.txt"
+#正規化したラベルのパス
+label_dir = "/home/shun-pc/Desktop/f1527237267089607000.txt"
 #入力画像パス
-image1 = '/home/shun-pc/Desktop/S_image_Data_expansion/images/f1527496759856816053.JPEG'
+image1 = '/home/shun-pc/Desktop/f1527237267089607000.JPEG'
 #背景画像のディレクトリパス
 back_images_dir = '/home/shun-pc/Desktop/S_image_Data_expansion/backgraund/*'
 image2 = glob.glob(back_images_dir)
@@ -23,7 +22,7 @@ line = os.listdir(erar_dir)
 #lower = np.array([0 and 10 and 20 , 85, 100], np.uint8)
 #upper = np.array([160 and 170 and 180, 255, 255], np.uint8)
 #青
-lower = np.array([100, 85, 50], np.uint8)
+lower = np.array([100, 85, 100], np.uint8)
 upper = np.array([140, 255, 255], np.uint8)
 #緑
 #lower = np.array([59, 85,100], np.uint8)
@@ -43,16 +42,20 @@ if __name__ == '__main__':
     #マスク画像作成
     contour_inf = []
     
+    #HSVに変換
     img_hsv2 = cv2.cvtColor(img1, cv2.COLOR_BGR2HSV)
     
+    #色相、彩度、明度（HSV）で闘値処理
     img_mask = cv2.inRange(img_hsv2, lower, upper)
     
-　　　　#モルフォロジー変換
+    #モルフォロジー変換
     kernel_o = np.ones((10,10),np.uint8)
     kernel_d = np.ones((7,7),np.uint8)
-　　　　#オープニング処理（黒から白の誤差をとる）
+    
+    #オープニング処理（黒から白の誤差をとる）
     opening = cv2.morphologyEx(img_mask, cv2.MORPH_OPEN, kernel_o)
-　　　　#膨張（マスク画像を縮めて青色や緑色の誤差をなくす）
+    
+    #膨張（マスク画像を縮めて青色や緑色の誤差をなくす）
     closing =  cv2.dilate(opening,kernel_d)
     #closing = cv2.morphologyEx(img_mask, cv2.MORPH_CLOSE, kernel_o)
     
@@ -96,10 +99,11 @@ if __name__ == '__main__':
         img_dst = cv2.bitwise_or(img1_cut, img2_cut)
         
         #合成画像を保存
-        cv2.imwrite("image" + str(name_num) + str(num) + ".JPEG", img_dst)
+        now_time = int(time.time())
+        cv2.imwrite("image" + str(now_time)+ str(num) + ".JPEG", img_dst)
         
         #ラベルの作成
-        with open("image" + str(name_num) + str(num) + ".txt", 'w') as f:
+        with open("image" + str(now_time) + str(num) + ".txt", 'w') as f:
             f.write(str(line))
 
 #うまく画像が作れないときは合成画像の保存とラベルの作成をコメントアウトして以下のコメントアウトを外してモルフォロジー変換のところや背景の色のパラメータを変更して見てください
@@ -107,4 +111,5 @@ if __name__ == '__main__':
 #cv2.imshow("Show MASK COMPOSITION Image", img_dst)
 #cv2.waitKey(0)
 cv2.destroyAllWindows()
+print(num)
 print("finish")
