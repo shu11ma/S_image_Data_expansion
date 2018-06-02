@@ -10,7 +10,7 @@ import time
 #正規化したラベルのパス
 label_dir = "/home/shun-pc/Desktop/f1527237267089607000.txt"
 #入力画像パス
-image1 = '/home/shun-pc/Desktop/f1527237267089607000.JPEG'
+image1 = '/home/shun-pc/src/darknet/e_label_tool/Images/060/f1527905447672133922.jpg'
 #背景画像のディレクトリパス
 back_images_dir = '/home/shun-pc/Desktop/S_image_Data_expansion/backgraund/*'
 image2 = glob.glob(back_images_dir)
@@ -19,11 +19,11 @@ erar_dir = '/home/shun-pc/Desktop/S_image_Data_expansion/backgraund/'
 line = os.listdir(erar_dir)
 #背景の色の選択(指定の色の＃を消す)
 #赤色
-#lower = np.array([0 and 10 and 20 , 85, 100], np.uint8)
-#upper = np.array([160 and 170 and 180, 255, 255], np.uint8)
+lower = np.array([0 and 10 and 20 , 85, 100], np.uint8)
+upper = np.array([160 and 170 and 180, 255, 255], np.uint8)
 #青
-lower = np.array([100, 85, 100], np.uint8)
-upper = np.array([140, 255, 255], np.uint8)
+#lower = np.array([100, 85, 100], np.uint8)
+#upper = np.array([140, 255, 255], np.uint8)
 #緑
 #lower = np.array([59, 85,100], np.uint8)
 #upper = np.array([99, 255,255], np.uint8)
@@ -49,13 +49,13 @@ if __name__ == '__main__':
     img_mask = cv2.inRange(img_hsv2, lower, upper)
     
     #モルフォロジー変換
-    kernel_o = np.ones((10,10),np.uint8)
+    kernel_o = np.ones((20,20),np.uint8)
     kernel_d = np.ones((7,7),np.uint8)
     
-    #オープニング処理（黒から白の誤差をとる）
+    	#オープニング処理（黒から白の誤差をとる）
     opening = cv2.morphologyEx(img_mask, cv2.MORPH_OPEN, kernel_o)
     
-    #膨張（マスク画像を縮めて青色や緑色の誤差をなくす）
+    	#膨張（マスク画像を縮めて青色や緑色の誤差をなくす）
     closing =  cv2.dilate(opening,kernel_d)
     #closing = cv2.morphologyEx(img_mask, cv2.MORPH_CLOSE, kernel_o)
     
